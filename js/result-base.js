@@ -6,10 +6,3 @@ if(localStorage.result){
 	editor.setValue(localStorage.result);
 	editor.selection.clearSelection();
 }
-
-{
-	attributes	: [
-		type	: 'firstname',
-		format	: ''
-	]
-}

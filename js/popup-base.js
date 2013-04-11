@@ -8,56 +8,50 @@ require.config({
 			main: "jquery"
 		},
 		{
-			name: "mustache",
-			location: "./libs",
-			main: "mustache"
-		},
-		{
 			name: "handlebars",
-			location: "./libs",
+			location: "./libs/handlebars/dist",
 			main: "handlebars"
 		},
 		{
 			name: "underscore",
-			location: "./libs",
+			location: "./libs/underscore",
 			main: "underscore-min"
 		},
 		{
 			name: "faker",
-			location: "./libs",
-			main: "faker"
+			location: "./libs/fakerjs",
+			main: "Faker"
 		}
 	]
 });
 
-/*{
-	attributes	: [
-		{
-			first
+define(['configurator'] , function(configurator){
+	var inst = configurator.getInstance();
+	inst.addRow();
+
+	// Init events
+	$('#options tbody .removeBtn')
+	.live({
+		'click'	: function(){
+			inst.removeRow($($(this).parents().get(1)).index());
 		}
-	]
-}*/
-
-define(['jquery' , 'faker'] , function($ , faker){
-	var result = [];
-
-	for (var i = 20000 ; i >= 0; i--) {
-		result.push({
-			name: 'Employee ' + i,
-			salary: Math.floor(Math.random()*10000),
-			url: 'http://www.google.com'
-		});
-	};
-
-	debugger;
-
-	require(['template'] , function(){
-		Template('parameters', {items : result}, function(html) {
-			$('body').html(html);
-        } , ['error' , 'hi'] , {
-        	link_to: function(context) {
-        		return "<a href='" + context.url + "'>" + context.name + "</a>";
-			}
-		});
 	});
+
+	$('#options tbody .select-type')
+	.live({
+		'change'	: function(){
+			inst.updateAPIs($($(this).parents().get(1)).index() , $(this).val())
+		}
+	});
+
+	$('#add')
+	.click(function(e){
+		inst.addRow();
+	});
+
+	$('#generate')
+	.click(function(){
+		localStorage.result = JSON.stringify(inst.generateFakeData() , null , '\t');
+		window.open(location.origin + '/result.html');
+	})
 });

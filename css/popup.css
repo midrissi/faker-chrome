@@ -5,5 +5,9 @@
  */
 
 body{
-	width: 400px;
+	width: 470px;
+}
+
+#options .select-subType{
+	width: 145px;
 }
