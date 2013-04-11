@@ -13,3 +13,6 @@
 [submodule "js/libs/underscore"]
 	path = js/libs/underscore
 	url = https://github.com/documentcloud/underscore.git
+[submodule "js/libs/fakerjs"]
+	path = js/libs/fakerjs
+	url = https://github.com/Marak/Faker.js
