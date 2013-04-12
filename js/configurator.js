@@ -1,7 +1,8 @@
 define(['ext_faker' , 'jquery' , 'template'] , function(faker , $){
 	function Row(row){
+		this.config = Configurator.getInstance();
+		
 		if(typeof row == 'number'){
-			this.config = Configurator.getInstance();
 			this.$dom 	= this.config.get$Row(row);
 		}
 		else{
@@ -25,9 +26,9 @@ define(['ext_faker' , 'jquery' , 'template'] , function(faker , $){
 		return this.$name.val();
 	};
 
-	Row.prototype.setType = function(type) {
+	Row.prototype.setType = function(type , subType) {
 		this.$type.val(type);
-		this.refreshSubTypes();
+		this.refreshSubTypes(subType);
 	};
 
 	Row.prototype.setSubType = function(subType) {
@@ -38,7 +39,7 @@ define(['ext_faker' , 'jquery' , 'template'] , function(faker , $){
 		this.$name.val(name);
 	};
 
-	Row.prototype.refreshSubTypes = function() {
+	Row.prototype.refreshSubTypes = function(subType) {
 		var that 		= this,
 			attributes	= this.config.getAPIs(that.getType());
 
@@ -46,7 +47,8 @@ define(['ext_faker' , 'jquery' , 'template'] , function(faker , $){
 			that
 			.$subType
 			.empty()
-			.append($(html));
+			.append($(html))
+			.val(subType);
         });
 	};
 
@@ -64,13 +66,13 @@ define(['ext_faker' , 'jquery' , 'template'] , function(faker , $){
 	Configurator.getInstance = function() {  
 		if (this.instance == null) {
 			this.instance = new Configurator();
-			this.instance.init();
+			this.instance._init();
 		}  
 
 		return this.instance;
 	}
 
-	Configurator.prototype.init 	= function() {
+	Configurator.prototype._init 	= function() {
 		var except	= ['definitions' , 'random' , 'version' , 'Helpers'];
 
 		for (var i in faker) {
@@ -95,11 +97,13 @@ define(['ext_faker' , 'jquery' , 'template'] , function(faker , $){
 			}
 		};
 
-		$(this).on({
+		this.loadConfig();
+
+		/*$(this).on({
 			'onChange' : function(){
 				localStorage.config = JSON.stringify(this.getConfig());
 			}
-		})
+		})*/
 	};
 
 	Configurator.prototype.addRow = function(options){
@@ -116,7 +120,7 @@ define(['ext_faker' , 'jquery' , 'template'] , function(faker , $){
 			.focus();
 
 			if(options && typeof options.onSuccess == 'function'){
-				options.onSuccess($row);
+				options.onSuccess( options.data , $row);
 			}
 	    });
 	}
@@ -196,9 +200,18 @@ define(['ext_faker' , 'jquery' , 'template'] , function(faker , $){
 			try{
 				this.setConfig(JSON.parse(localStorage.config));
 			}catch(e){
-
+				this.init();
 			}
 		}
+		else{
+			this.init();
+		}
+	}
+
+	Configurator.prototype.init = function(){
+		var body	= $('#options tbody');
+		body.empty();
+		this.addRow();
 	}
 
 	Configurator.prototype.setConfig = function(config){
@@ -214,14 +227,19 @@ define(['ext_faker' , 'jquery' , 'template'] , function(faker , $){
 		this.setLength(config.length);
 
 		for (var attr in config.columns) {
-			this.addRow();
-			
-			var col = config.columns[attr],
-				row = new Row(index);
+			this.addRow({
+				data : {
+					attr 	: attr
+				},
+				onSuccess: function(data , $obj){
+					var attr= data.attr,
+						col = config.columns[attr],
+						row = new Row($obj);
 
-			row.setName(attr);
-			row.setType(col.attrType);
-			row.setSubType(col.subType);
+					row.setName(attr);
+					row.setType(col.attrType , col.attrSubType);
+				}
+			});
 
 			index++;
 		};
@@ -229,8 +247,6 @@ define(['ext_faker' , 'jquery' , 'template'] , function(faker , $){
 		if(index == 0){
 			this.addRow();
 		}
-
-		return result;
 	}
 
 	Configurator.prototype.generateFakeData = function(){

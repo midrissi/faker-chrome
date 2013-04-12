@@ -32,8 +32,6 @@ require.config({
 
 define(['configurator'] , function(configurator){
 	var inst = configurator.getInstance();
-	inst.addRow();
-	inst.loadConfig();
 
 	// Init events
 	$('#options tbody .removeBtn')
