@@ -9,18 +9,23 @@ require.config({
 		},
 		{
 			name: "handlebars",
-			location: "./libs/handlebars/dist",
+			location: "./libs",//"./libs/handlebars/dist",
 			main: "handlebars"
 		},
 		{
 			name: "underscore",
-			location: "./libs/underscore",
+			location: "./libs",//"./libs/underscore",
 			main: "underscore-min"
 		},
 		{
 			name: "faker",
-			location: "./libs/fakerjs",
-			main: "Faker"
+			location: "./libs",//"./libs/fakerjs",
+			main: "faker"
+		},
+		{
+			name: "ext_faker",
+			location: "./libs",//"./libs/fakerjs",
+			main: "extended-faker"
 		}
 	]
 });

@@ -1,4 +1,4 @@
-define(['faker' , 'jquery' , 'template'] , function(faker , $){
+define(['ext_faker' , 'jquery' , 'template'] , function(faker , $){
 	function Row(row){
 		if(typeof row == 'number'){
 			this.config = Configurator.getInstance();
@@ -93,6 +93,8 @@ define(['faker' , 'jquery' , 'template'] , function(faker , $){
 
 			$row
 			.appendTo($('#options tbody'))
+			.find('input[type=text]')
+			.focus();
 	    });
 	}
 
