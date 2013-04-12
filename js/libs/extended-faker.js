@@ -32,9 +32,17 @@ define(['faker'] , function(faker){
 		return this.birthDate(28 , 45);
 	}
 
+	faker.Lorem.word = function (num) {
+        faker.Lorem.words(1)[0];
+    };
+
 	faker.Date.studentBirthDate	= function(){
 		return this.birthDate(20 , 28);
 	}
+
+	faker.PhoneNumber.phoneNumber = function () {
+		return faker.Helpers.replaceSymbolWithNumber(faker.definitions.phone_formats[1]);
+    };
 
 	faker.Name.femaleName = function(){
 		return faker.random.female_name();
