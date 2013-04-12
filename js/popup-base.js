@@ -33,6 +33,7 @@ require.config({
 define(['configurator'] , function(configurator){
 	var inst = configurator.getInstance();
 	inst.addRow();
+	inst.loadConfig();
 
 	// Init events
 	$('#options tbody .removeBtn')
@@ -54,9 +55,19 @@ define(['configurator'] , function(configurator){
 		inst.addRow();
 	});
 
+	$('#save')
+	.click(function(e){
+		inst.saveConfig();
+	});
+
+	$('#load')
+	.click(function(e){
+		inst.loadConfig();
+	});
+
 	$('#generate')
 	.click(function(){
 		localStorage.result = JSON.stringify(inst.generateFakeData() , null , '\t');
 		window.open(location.origin + '/result.html');
-	})
+	});
 });
