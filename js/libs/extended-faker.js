@@ -6,6 +6,36 @@ define(['faker'] , function(faker){
 	faker.definitions.female_prefix	= ["Mrs.", "Ms.", "Miss"];
 	faker.definitions.name_prefix	= faker.definitions.male_prefix.concat(faker.definitions.female_prefix);
 
+	var SECOND	= 1000,
+		MINUTE	= SECOND*60,
+		HOUR	= MINUTE*60,
+		DAY 	= HOUR*24,
+		MONTH	= DAY*30,
+		YEAR	= DAY*365;
+
+	faker.Date = {}
+	faker.Date.birthDate = function randomDate(minAge, maxAge) {
+		var start 	= minAge*YEAR,
+			end 	= maxAge*YEAR;
+
+		start 	= new Date() - start;
+		end 	= new Date() - end;
+
+	    return new Date(start + Math.random() * (end - start));
+	}
+
+	faker.Date.adminBirthDate	= function(){
+		return this.birthDate(45 , 60);
+	}
+
+	faker.Date.teacherBirthDate	= function(){
+		return this.birthDate(28 , 45);
+	}
+
+	faker.Date.studentBirthDate	= function(){
+		return this.birthDate(20 , 28);
+	}
+
 	faker.Name.femaleName = function(){
 		return faker.random.female_name();
 	}

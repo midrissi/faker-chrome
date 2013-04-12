@@ -1,4 +1,4 @@
-define(['ext_faker' , 'jquery' , 'template'] , function(faker , $){
+define(['faker' , 'jquery' , 'template'] , function(faker , $){
 	function Row(row){
 		if(typeof row == 'number'){
 			this.config = Configurator.getInstance();
@@ -23,19 +23,6 @@ define(['ext_faker' , 'jquery' , 'template'] , function(faker , $){
 
 	Row.prototype.getName = function() {
 		return this.$name.val();
-	};
-
-	Row.prototype.setType = function(type) {
-		this.$type.val(type);
-		this.refreshSubTypes();
-	};
-
-	Row.prototype.setSubType = function(subType) {
-		this.$subType.val(subType);
-	};
-
-	Row.prototype.setName = function(name) {
-		this.$name.val(name);
 	};
 
 	Row.prototype.refreshSubTypes = function() {
@@ -94,15 +81,9 @@ define(['ext_faker' , 'jquery' , 'template'] , function(faker , $){
 				this.faker.push(obj);
 			}
 		};
-
-		$(this).on({
-			'onChange' : function(){
-				localStorage.config = JSON.stringify(this.getConfig());
-			}
-		})
 	};
 
-	Configurator.prototype.addRow = function(options){
+	Configurator.prototype.addRow = function(){
 		var types 		= this.faker,
 			subTypes	= types[0].attributes,
 			rows 		= $('#options tbody tr');
@@ -112,20 +93,10 @@ define(['ext_faker' , 'jquery' , 'template'] , function(faker , $){
 
 			$row
 			.appendTo($('#options tbody'))
-			.find('input[type=text]')
-			.focus();
-
-			if(options && typeof options.onSuccess == 'function'){
-				options.onSuccess($row);
-			}
 	    });
 	}
 
 	Configurator.prototype.getLength = function(){
-		return $('#length').val();
-	}
-
-	Configurator.prototype.setLength = function(){
 		return $('#length').val();
 	}
 
@@ -170,7 +141,7 @@ define(['ext_faker' , 'jquery' , 'template'] , function(faker , $){
 				columns	: {}
 			};
 
-		for (var i = 0; i < rows.length; i++) {
+		for (var i = rows.length - 1; i >= 0; i--) {
 			var row 	= rows.get(i),
 				rowObj	= new Row($(row));
 
@@ -179,56 +150,6 @@ define(['ext_faker' , 'jquery' , 'template'] , function(faker , $){
 				attrType 	: rowObj.getType()
 			};
 		};
-
-		return result;
-	}
-
-	Configurator.prototype.saveConfig = function(){
-		localStorage.config = JSON.stringify(this.getConfig());
-	}
-
-	Configurator.prototype.initConfig = function(){
-		localStorage.removeItem('config');
-	}
-
-	Configurator.prototype.loadConfig = function(){
-		if(localStorage.config){
-			try{
-				this.setConfig(JSON.parse(localStorage.config));
-			}catch(e){
-
-			}
-		}
-	}
-
-	Configurator.prototype.setConfig = function(config){
-		var body	= $('#options tbody'),
-			index 	= 0;
-
-		config = $.extend(true , {
-			length : 100,
-			columns : {}
-		} , config);
-
-		body.empty();
-		this.setLength(config.length);
-
-		for (var attr in config.columns) {
-			this.addRow();
-			
-			var col = config.columns[attr],
-				row = new Row(index);
-
-			row.setName(attr);
-			row.setType(col.attrType);
-			row.setSubType(col.subType);
-
-			index++;
-		};
-
-		if(index == 0){
-			this.addRow();
-		}
 
 		return result;
 	}

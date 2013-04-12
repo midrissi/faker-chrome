@@ -9,23 +9,18 @@ require.config({
 		},
 		{
 			name: "handlebars",
-			location: "./libs",//"./libs/handlebars/dist",
+			location: "./libs/handlebars/dist",
 			main: "handlebars"
 		},
 		{
 			name: "underscore",
-			location: "./libs",//"./libs/underscore",
+			location: "./libs/underscore",
 			main: "underscore-min"
 		},
 		{
 			name: "faker",
-			location: "./libs",//"./libs/fakerjs",
-			main: "faker"
-		},
-		{
-			name: "ext_faker",
-			location: "./libs",//"./libs/fakerjs",
-			main: "extended-faker"
+			location: "./libs/fakerjs",
+			main: "Faker"
 		}
 	]
 });
@@ -33,7 +28,6 @@ require.config({
 define(['configurator'] , function(configurator){
 	var inst = configurator.getInstance();
 	inst.addRow();
-	inst.loadConfig();
 
 	// Init events
 	$('#options tbody .removeBtn')
@@ -55,19 +49,9 @@ define(['configurator'] , function(configurator){
 		inst.addRow();
 	});
 
-	$('#save')
-	.click(function(e){
-		inst.saveConfig();
-	});
-
-	$('#load')
-	.click(function(e){
-		inst.loadConfig();
-	});
-
 	$('#generate')
 	.click(function(){
 		localStorage.result = JSON.stringify(inst.generateFakeData() , null , '\t');
 		window.open(location.origin + '/result.html');
-	});
+	})
 });
