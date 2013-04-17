@@ -4,14 +4,14 @@
 	<td>
 		<select class="select-type">
 		{{#each types}}
-			<option value="{{value}}">{{key}}</option>
+			<option value="{{value}}">{{label}}</option>
 		{{/each}}
 		</select>
 	</td>
 	<td>
 		<select class="select-subType">
 		{{#each subTypes}}
-			<option value="{{value}}">{{key}}</option>
+			<option value="{{value}}">{{label}}</option>
 		{{/each}}
 		</select>
 	</td>

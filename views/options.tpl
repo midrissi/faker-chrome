@@ -1,3 +1,3 @@
 {{#each attributes}}
-	<option value="{{value}}">{{key}}</option>
+	<option value="{{value}}">{{label}}</option>
 {{/each}}

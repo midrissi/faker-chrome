@@ -1,4 +1,4 @@
-define(['ext_faker' , 'jquery' , 'template'] , function(faker , $){
+define(['ext_faker' , 'jquery', 'underscore', 'template'] , function(faker , $ , _){
 	function Row(row){
 		this.config = Configurator.getInstance();
 		
@@ -73,12 +73,15 @@ define(['ext_faker' , 'jquery' , 'template'] , function(faker , $){
 	}
 
 	Configurator.prototype._init 	= function() {
-		var except	= ['definitions' , 'random' , 'version' , 'Helpers'];
+
+		this.faker = faker._meta.apisToExpose
+		
+		/*var except	= ['definitions' , 'random' , 'version' , 'Helpers'];
 
 		for (var i in faker) {
 			if(except.indexOf(i) < 0){
 				var obj = {
-					key			: i,
+					label		: i,
 					value 		: i,
 					attributes	: []
 				};
@@ -87,7 +90,7 @@ define(['ext_faker' , 'jquery' , 'template'] , function(faker , $){
 					var attr = faker[i][j];
 					if(typeof attr == 'function'){
 						obj.attributes.push({
-							key		: j,
+							label	: j,
 							value 	: j
 						});
 					}
@@ -95,15 +98,13 @@ define(['ext_faker' , 'jquery' , 'template'] , function(faker , $){
 
 				this.faker.push(obj);
 			}
-		};
+		};*/
 
-		this.loadConfig();
+		this.initTags();
 
-		/*$(this).on({
-			'onChange' : function(){
-				localStorage.config = JSON.stringify(this.getConfig());
-			}
-		})*/
+		this.loadView('home' , function(){
+			this.loadConfig();
+		});
 	};
 
 	Configurator.prototype.addRow = function(options){
@@ -162,11 +163,6 @@ define(['ext_faker' , 'jquery' , 'template'] , function(faker , $){
 		row.refreshSubTypes();
 	}
 
-	Configurator.prototype.updateAPIs = function(index){
-		var row = new Row(index);
-		row.refreshSubTypes();
-	}
-
 	Configurator.prototype.getConfig = function(){
 		var rows 	= $('#options tbody tr'),
 			result	= {
@@ -192,7 +188,11 @@ define(['ext_faker' , 'jquery' , 'template'] , function(faker , $){
 	}
 
 	Configurator.prototype.initConfig = function(){
-		localStorage.removeItem('config');
+		localStorage.clear();
+		require(['faker'] , function(f){
+			faker = f;
+		})
+		this.loadConfig();
 	}
 
 	Configurator.prototype.loadConfig = function(){
@@ -212,6 +212,125 @@ define(['ext_faker' , 'jquery' , 'template'] , function(faker , $){
 		var body	= $('#options tbody');
 		body.empty();
 		this.addRow();
+	}
+
+	Configurator.prototype.refreshTags = function(){
+		var $t = $('#content.definitions textarea');
+		if($t.length){
+			var value 	= '',
+				def 	= $('#definition').val(),
+				arr 	= [];
+
+			for(var i = 0 , item ; item = faker.definitions[def][i] ; i++){
+				if(i>0)
+					value += '\n';
+
+				value += item;
+			}
+
+			$t.val(value);
+		}
+	}
+
+	Configurator.prototype.saveTags = function(){
+		var $t = $('#content.definitions textarea');
+		if($t.length){
+			var def 	= $('#definition').val(),
+				arr 	= $t.val().split('\n'),
+				lsJSON	= JSON.parse(localStorage.definitions ? localStorage.definitions : "{}");
+
+			faker.definitions[def] = arr;
+			lsJSON[def] = arr;
+
+			localStorage.definitions = JSON.stringify(lsJSON);
+		}
+	}
+
+	Configurator.prototype.initTags = function(){
+		var lsJSON = JSON.parse(localStorage.definitions ? localStorage.definitions : "{}");
+
+		for(var attr in lsJSON){
+			faker.definitions[attr] = lsJSON[attr];
+		}
+	}
+
+	Configurator.prototype.loadView = function(view , func){
+		var obj;
+
+		switch(view){
+			case 'home':
+				obj = {};
+				break;
+			case 'definitions':
+				obj = {
+					options : [],
+					defs: []
+				}
+
+				var first = true;
+
+				for(var attr in faker.definitions){
+					obj.options.push({
+						label: attr,
+						value: attr
+					});
+
+					if(first){
+						obj.defs = faker.definitions[attr];
+						first = false;
+					}
+				}
+
+				break;
+			default:
+				console.log('Unknown view');
+				return;
+		}
+
+		Template(view, obj, function(html) {
+			var allBtns = [
+				{
+					id 		: 'add',
+					views 	: ['home']
+				},
+				{
+					id 		: 'save',
+					views 	: ['home']
+				},
+				{
+					id 		: 'load',
+					views 	: ['home']
+				},
+				{
+					id 		: 'init',
+					views 	: ['home']
+				},
+				{
+					id 		: 'saveDefs',
+					views 	: ['definitions']
+				},
+				{
+					id 		: 'navigator',
+					views 	: ['home' , 'definitions']
+				}
+			]
+			
+			for(var i = 0 , btn ; btn = allBtns[i] ; i++){
+				if(btn.views.indexOf(view) >= 0){
+					$('#' + btn.id).show();
+				}
+				else{
+					$('#' + btn.id).hide();
+				}
+			}
+
+			$('#content')
+			.html(html);
+
+			if(typeof func == 'function'){
+				func.call(Configurator.getInstance());
+			}
+        });
 	}
 
 	Configurator.prototype.setConfig = function(config){
