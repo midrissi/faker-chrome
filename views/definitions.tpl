@@ -4,5 +4,5 @@
 {{/each}}
 </select>
 <br/>
-<textarea cols="63" rows="30">{{#each defs}}
+<textarea cols="63" rows="20">{{#each defs}}
 {{this}}{{/each}}</textarea>

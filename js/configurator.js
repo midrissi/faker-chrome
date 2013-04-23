@@ -74,32 +74,9 @@ define(['ext_faker' , 'jquery', 'underscore', 'template'] , function(faker , $ ,
 
 	Configurator.prototype._init 	= function() {
 
-		this.faker = faker._meta.apisToExpose
+		this.faker 			= faker._meta.apisToExpose;
+		this.definitions 	= faker._meta.definitionsToExpose;
 		
-		/*var except	= ['definitions' , 'random' , 'version' , 'Helpers'];
-
-		for (var i in faker) {
-			if(except.indexOf(i) < 0){
-				var obj = {
-					label		: i,
-					value 		: i,
-					attributes	: []
-				};
-				
-				for(var j in faker[i]){
-					var attr = faker[i][j];
-					if(typeof attr == 'function'){
-						obj.attributes.push({
-							label	: j,
-							value 	: j
-						});
-					}
-				}
-
-				this.faker.push(obj);
-			}
-		};*/
-
 		this.initTags();
 
 		this.loadView('home' , function(){
@@ -240,6 +217,11 @@ define(['ext_faker' , 'jquery', 'underscore', 'template'] , function(faker , $ ,
 				lsJSON	= JSON.parse(localStorage.definitions ? localStorage.definitions : "{}");
 
 			faker.definitions[def] = arr;
+
+			if(this.definitions[def] && this.definitions[def].onchange){
+				this.definitions[def].onchange.call( this.definitions[def] , arr);
+			}
+
 			lsJSON[def] = arr;
 
 			localStorage.definitions = JSON.stringify(lsJSON);
@@ -251,6 +233,9 @@ define(['ext_faker' , 'jquery', 'underscore', 'template'] , function(faker , $ ,
 
 		for(var attr in lsJSON){
 			faker.definitions[attr] = lsJSON[attr];
+			if(this.definitions[attr] && this.definitions[attr].onchange){
+				this.definitions[attr].onchange.call(this.definitions[attr] , lsJSON[attr]);
+			}
 		}
 	}
 
@@ -267,12 +252,13 @@ define(['ext_faker' , 'jquery', 'underscore', 'template'] , function(faker , $ ,
 					defs: []
 				}
 
-				var first = true;
+				var first 	= true,
+					defs 	= this.definitions;
 
-				for(var attr in faker.definitions){
+				for(var attr in defs){
 					obj.options.push({
-						label: attr,
-						value: attr
+						label: defs[attr].label ? defs[attr].label : attr,
+						value: defs[attr].value ? defs[attr].value : attr
 					});
 
 					if(first){

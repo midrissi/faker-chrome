@@ -72,13 +72,13 @@ define(['configurator'] , function(configurator){
 	.click(function(e){
 		if($(this).hasClass('definitions')){
 			inst.loadView('home');
-			$(this).html('Definitions');
+			$('a span' , $(this)).html('Definitions');
 			inst.loadConfig();
 		}
 		else{
 			inst.saveConfig();
 			inst.loadView('definitions');
-			$(this).html('Home');
+			$('a span' , $(this)).html('Home');
 		}
 
 		$(this)
@@ -114,13 +114,24 @@ define(['configurator'] , function(configurator){
 		}
 	});
 
+	function keycode(c){
+		return c.charCodeAt(0);
+	}
+
 	$(document)
 	.on({
 		'keydown' : function(e){
 			switch(true){
+				case e.altKey && e.ctrlKey && e.keyCode == keycode('S') :
+					inst.saveConfig();
+					break;
+				case e.altKey && e.ctrlKey && e.keyCode == keycode('N') :
+					inst.addRow();
+					break;
 				case e.ctrlKey:
 				case e.metaKey:
 					$('#generate').html('Generate & Save');
+					break;
 			}
 		},
 		'keyup'	: function(e){

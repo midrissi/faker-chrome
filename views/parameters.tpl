@@ -1,5 +1,5 @@
 <tr>
-	<td><button class="removeBtn">remove</button></td>
+	<td><button class="removeBtn"></button></td>
 	<td><input type="text" value="{{attrName}}" class="input-name"/></td>
 	<td>
 		<select class="select-type">
